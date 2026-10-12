@@ -1,0 +1,25 @@
+# Artefactos de compilación (se generan dentro del contenedor)
+target/
+
+# Git
+.git
+.gitignore
+
+# Variables de entorno / secretos
+.env
+.env.*
+env.example
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Documentación
+README.md
+*.md
+
+# Certificados / claves privadas
+*.pem
+*.key
+*.crt

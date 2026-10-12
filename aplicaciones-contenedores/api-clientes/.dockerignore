@@ -1,0 +1,28 @@
+# Entornos virtuales y artefactos de Python (el venv se crea dentro de la imagen)
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Git
+.git
+.gitignore
+
+# Variables de entorno / secretos
+.env
+.env.*
+env.example
+
+# IDE
+.idea/
+.vscode/
+
+# Documentación
+README.md
+*.md
+
+# Certificados / claves privadas
+*.pem
+*.key
+*.crt

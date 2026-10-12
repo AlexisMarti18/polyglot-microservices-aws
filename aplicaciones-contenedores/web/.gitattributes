@@ -1,0 +1,5 @@
+# Los archivos que terminan dentro de la imagen Linux se guardan siempre con LF, aunque Git para
+# Windows tenga core.autocrlf=true (un "#!/bin/sh\r" no ejecuta; ver ERRORES.md).
+*.sh    text eol=lf
+*.conf  text eol=lf
+Dockerfile text eol=lf

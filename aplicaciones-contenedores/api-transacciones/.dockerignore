@@ -1,0 +1,6 @@
+# Lista blanca: al build context solo entra lo que necesita "go build".
+# Queda afuera todo lo demas: .env, env.example, certificados, docs, binarios locales, .git.
+**
+!*.go
+!go.mod
+!go.sum

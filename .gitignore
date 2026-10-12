@@ -1,0 +1,19 @@
+node_modules/
+dist/
+venv/
+__pycache__/
+target/
+bin/
+obj/
+db/data/
+.env
+.env.*
+!env.example
+
+# Certificados y claves privadas (TLS, SSH)
+*.pem
+*.key
+*.crt
+
+# Estado local de deploy.sh (datos de la ultima EC2, known_hosts)
+.deploy/

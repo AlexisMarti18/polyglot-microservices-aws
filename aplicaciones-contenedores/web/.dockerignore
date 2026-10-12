@@ -1,0 +1,27 @@
+# Dependencias y build local (se generan dentro del contenedor con npm ci / npm run build)
+node_modules/
+dist/
+npm-debug.log*
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Variables de entorno / secretos
+.env
+.env.*
+env.example
+
+# IDE
+.idea/
+.vscode/
+
+# Documentación
+*.md
+
+# Certificados / claves privadas: se generan al arrancar el contenedor, nunca en la imagen
+nginx/certs/
+*.pem
+*.key
+*.crt

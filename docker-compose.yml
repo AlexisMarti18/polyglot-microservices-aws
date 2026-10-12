@@ -1,0 +1,86 @@
+services:
+  db:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-db:1.0.0
+    env_file: [./aplicaciones-contenedores/db/.env]
+    volumes: [db_data:/var/lib/mysql]
+    networks: [backend]
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.50", memory: 512M}
+
+  api-transacciones:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-api-transacciones:1.0.0
+    env_file: [./aplicaciones-contenedores/api-transacciones/.env]
+    networks: [frontend, backend]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 128M}
+
+  api-clientes:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-api-clientes:1.0.0
+    env_file: [./aplicaciones-contenedores/api-clientes/.env]
+    networks: [frontend, backend]
+    depends_on: {db: {condition: service_healthy}}
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 128M}
+  api-pagos:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-api-pagos:1.0.0
+    env_file: [./aplicaciones-contenedores/api-pagos/.env]
+    networks: [frontend, backend]
+    depends_on: {db: {condition: service_healthy}}
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 128M}
+
+  # Spring Boot es el que mas memoria pide: el heap de la JVM se ajusta al 75% de este limite
+  # (JAVA_TOOL_OPTIONS en su Dockerfile). Con menos de ~384M arranca lento o muere por OOM.
+  api-facturas:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-api-facturas:1.0.0
+    env_file: [./aplicaciones-contenedores/api-facturas/.env]
+    networks: [frontend, backend]
+    depends_on: {db: {condition: service_healthy}}
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.50", memory: 512M}
+
+  api-tarjetas:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-api-tarjetas:1.0.0
+    env_file: [./aplicaciones-contenedores/api-tarjetas/.env]
+    networks: [frontend, backend]
+    depends_on: {db: {condition: service_healthy}}
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 256M}
+
+  web:
+    image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-web:1.2.0
+    ports: ["8443:8443"]
+    volumes: [web_certs:/etc/nginx/certs]
+    networks: [frontend]
+    read_only: true
+    tmpfs:
+      - /tmp:uid=101,gid=101,mode=0700
+      - /var/cache/nginx:uid=101,gid=101,mode=0700
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+    restart: always
+    deploy:
+      resources:
+        limits: {cpus: "0.25", memory: 64M, pids: 100}
+
+volumes: {db_data: {}, web_certs: {}}
+# frontend: web ↔ APIs.  backend: APIs ↔ db.  web no puede alcanzar db directamente.
+networks: {frontend: {}, backend: {}}
