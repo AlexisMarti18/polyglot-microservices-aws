@@ -7,3 +7,9 @@
 Dockerfile   text eol=lf
 .dockerignore text eol=lf
 env.example  text eol=lf
+
+# Estadistica de lenguajes de GitHub (Linguist): por defecto ignora los archivos de datos y de
+# configuracion. Aca la configuracion es codigo de infraestructura del proyecto (docker-compose.yml
+# y nginx.conf), asi que se la incluye para que la barra de lenguajes refleje el repo.
+*.yml        linguist-detectable
+*.conf       linguist-detectable linguist-language=Nginx

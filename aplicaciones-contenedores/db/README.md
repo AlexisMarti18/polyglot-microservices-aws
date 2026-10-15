@@ -24,7 +24,7 @@ docker compose -p fintech-db-local ps
    ```
 
 Compose mantiene los datos en un volumen nombrado y conecta `db` a la red
-`interna`. No publica el puerto 3306 al host. Las APIs en la misma red deben
+`backend` (la comparten solo las APIs y `db`). No publica el puerto 3306 al host. Las APIs en la misma red deben
 usar `DB_HOST=db`, `DB_PORT=3306` y el nombre de su propia base en `DB_NAME`.
 La imagen incluye una verificación de salud con el script oficial de MariaDB;
 esperar a que `ps` indique `healthy` antes de consultar la base recién iniciada.

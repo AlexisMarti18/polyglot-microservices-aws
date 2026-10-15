@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 // Esta API se conecta a "db_tarjetas", UNA de las 5 bases que viven en la MISMA instancia
-// compartida de MariaDB (ver tp-2026/db).
+// compartida de MariaDB (ver aplicaciones-contenedores/db).
 string ConnectionString()
 {
     var host = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";

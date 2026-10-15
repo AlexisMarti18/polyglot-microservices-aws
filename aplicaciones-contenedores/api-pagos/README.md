@@ -87,7 +87,7 @@ base compartida) y `DB_NAME=db_pagos`. El `.env` nunca se sube a Git.
 
 ### Levantar con Compose
 
-El servicio `api-pagos` del `docker-compose.yml` raíz se conecta a la red `interna`, espera a que
+El servicio `api-pagos` del `docker-compose.yml` raíz se conecta a las redes `frontend` y `backend`, espera a que
 `db` esté `healthy`, tiene `restart: always` y límites de 0.25 CPU / 128 MiB, y **no publica puertos**:
 solo se accede a través de `web` (`/api/pagos`).
 
@@ -97,10 +97,11 @@ docker compose ps                                 # ambos deben quedar "healthy"
 ```
 
 Probar desde dentro de la red (la API no está expuesta al host). El nombre de la red es
-`<proyecto>_interna`, donde el proyecto es el nombre de la carpeta; acá, `tp1`:
+`<proyecto>_backend`, donde el proyecto es el nombre de la carpeta del repo (se ve con
+`docker network ls`):
 
 ```sh
-docker run --rm --network tp1_interna busybox wget -qO- http://api-pagos:8080/pagos
+docker run --rm --network <proyecto>_backend busybox wget -qO- http://api-pagos:8080/pagos
 ```
 
 ### Salida a internet

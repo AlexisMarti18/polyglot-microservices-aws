@@ -64,7 +64,7 @@ cp aplicaciones-contenedores/api-clientes/env.example aplicaciones-contenedores/
 docker compose up -d db api-clientes
 ```
 
-El servicio no publica puertos al host: se accede por la red `interna` de Compose (NGINX lo
+El servicio no publica puertos al host: se accede por las redes `frontend` y `backend` de Compose (NGINX lo
 proxya en `/api/clientes` hacia `api-clientes:8080`). Para probar desde adentro:
 
 ```sh

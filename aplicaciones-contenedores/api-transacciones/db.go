@@ -9,7 +9,7 @@ import (
 )
 
 // Esta API se conecta a "db_transacciones", UNA de las 5 bases que viven en la MISMA
-// instancia compartida de MariaDB (ver tp-2026/db).
+// instancia compartida de MariaDB (ver aplicaciones-contenedores/db).
 func conectarDB() (*sql.DB, error) {
 	host := getEnv("DB_HOST", "localhost")
 	port := getEnv("DB_PORT", "3306")

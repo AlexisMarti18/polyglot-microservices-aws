@@ -416,7 +416,7 @@ ${V}${N}Despliegue OK${X}: $URL  (el navegador va a advertir por el certificado 
 SSH:  ssh -i "$SSH_KEY" $SSH_USER@$HOST
 
 Evidencia para el README y AWS_EC2.md (todo en ESTA misma sesion del Learner Lab):
-  [ ] Navegador en $URL/ con la portada de integrantes
+  [ ] Navegador en $URL/ con la portada de la aplicacion
   [ ] ABM de las 5 entidades desde el navegador
   [ ] Los 6 curl -k (/ y /api/*) desde una maquina del grupo
   [ ] docker compose ps en la EC2 (7 servicios healthy)

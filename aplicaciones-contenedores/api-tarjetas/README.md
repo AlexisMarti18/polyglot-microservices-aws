@@ -40,6 +40,7 @@ curl http://localhost:8080/tarjetas
 ```
 
 ## Docker
-Este directorio **no incluye Dockerfile** — es parte de la consigna del TP escribirlo (ver el
-`README.md` en la raíz de `tp-2026/`). Pista: acá también aplica multistage (compilar/publicar
-con el SDK, correr con la imagen `aspnet` runtime, mucho más liviana).
+El `Dockerfile` es multistage: `dotnet/sdk:8.0-alpine` restaura y publica la app, y la imagen final
+(`dotnet/aspnet:8.0-alpine`, mucho más liviana) solo lleva el runtime y la app publicada, con el
+usuario no-root `appuser`. Ver el [README de la raíz](../../README.md) y
+[SEGURIDAD.md](../../SEGURIDAD.md).

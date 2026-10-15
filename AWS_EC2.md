@@ -167,6 +167,13 @@ aws ec2 describe-instances \
 
 ![Salida de la AWS CLI en CloudShell](./docs/capturas/10-aws-cli.png)
 
+> **Nota sobre esta captura:** se ocultó un dato personal (el correo de la cuenta, arriba a la
+> derecha) y el procesamiento de la imagen alteró algunos caracteres. Por ejemplo, la IP de la
+> tabla se lee `24.152.76.222` en lugar de `54.152.76.222`, y varios IDs (Security Group, subred,
+> VPC y AMI) difieren en uno o dos caracteres. **Los valores correctos son los de la tabla de texto
+> de arriba.** Se pueden contrastar con el panel superior de la misma captura (ID de la instancia,
+> IP pública y privada) y con los apartados 1 a 3 de [Evidencia de funcionamiento](./README.md#evidencia-de-funcionamiento).
+
 La terminal propia del Learner Lab no tenía credenciales para la CLI; por eso se usó CloudShell
 (ver [ERRORES.md](./ERRORES.md#aws-academy-learner-lab)).
 

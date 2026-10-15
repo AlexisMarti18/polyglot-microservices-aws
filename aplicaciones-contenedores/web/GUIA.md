@@ -147,8 +147,7 @@ El código fuente está en:
 ### 3.2 Qué hace `main.js`
 
 - Define las cinco entidades (clientes, pagos, etc.) con sus campos.
-- Dibuja una **portada con los integrantes** del grupo, que el enunciado pide como prueba de
-  autoría.
+- Dibuja el **encabezado** de la aplicación (marca, título y la leyenda del stack).
 - Por cada entidad arma un formulario y una tabla.
 - Para leer, crear y borrar, llama a **rutas relativas**: `/api/clientes`, `/api/pagos`, etc.
 
@@ -790,7 +789,7 @@ web:
   image: ${DOCKERHUB_USER:-tu-usuario}/fintech-nova-web:1.2.0
   ports: ["8443:8443"]
   volumes: [web_certs:/etc/nginx/certs]
-  networks: [interna]
+  networks: [frontend]
   read_only: true
   tmpfs:
     - /tmp:uid=101,gid=101,mode=0700
@@ -811,7 +810,7 @@ web:
 | `image` | La imagen a usar, descargada de Docker Hub. | El compose no usa `build:`. `<usuario>` es la cuenta de Docker Hub donde se publica. |
 | `ports: ["8443:8443"]` | Conecta el puerto 8443 de la máquina con el 8443 del contenedor. | Es el **único** puerto publicado de todo el stack. |
 | `volumes` | Monta el volumen `web_certs` en la carpeta del certificado. | El certificado sobrevive aunque se borre y recree el contenedor. |
-| `networks: [interna]` | Conecta `web` a la red compartida. | Para poder hablar con las APIs por su nombre. |
+| `networks: [frontend]` | Conecta `web` a la red `frontend`, que comparte con las APIs. | Para poder hablar con las APIs por su nombre. `web` no está en la red `backend`, así que no puede llegar a la base. |
 | `read_only: true` | Todo el sistema de archivos del contenedor queda de solo lectura. | Si alguien entrara, no podría modificar la configuración ni dejar archivos. |
 | `tmpfs` | Crea carpetas temporales **en memoria** para `/tmp` y la caché. | NGINX necesita escribir ahí. `uid=101` es el número del usuario `nginx`: sin eso, la carpeta sería de root y NGINX no podría usarla. |
 | `cap_drop: [ALL]` | Quita todas las *capabilities*. | Son permisos especiales del sistema (por ejemplo, abrir puertos bajos). NGINX no necesita ninguna. |

@@ -37,6 +37,8 @@ curl http://localhost:8080/facturas
 ```
 
 ## Docker
-Este directorio **no incluye Dockerfile** — es parte de la consigna del TP escribirlo (ver el
-`README.md` en la raíz de `tp-2026/`). Pista: acá el multistage (compilar con Maven, correr con
-un JRE) no es opcional si quieren una imagen final liviana.
+El `Dockerfile` es multistage: `maven:3.9-eclipse-temurin-21-alpine` compila el `.jar` y la imagen
+final (`eclipse-temurin:21-jre-alpine`) solo lleva el JRE y el `.jar`, con el usuario no-root
+`appuser`. El heap de la JVM se calcula sobre el límite de memoria del contenedor
+(`JAVA_TOOL_OPTIONS`), y el `HEALTHCHECK` consulta `/facturas`, que además comprueba la conexión a
+la base. Ver el [README de la raíz](../../README.md) y [SEGURIDAD.md](../../SEGURIDAD.md).

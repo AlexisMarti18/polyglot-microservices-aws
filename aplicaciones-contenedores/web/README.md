@@ -36,15 +36,15 @@ npm run build      # genera dist/
 npm run preview    # sirve dist/ en un puerto local, PERO sin el proxy de /api
 ```
 Para probar `/api/...` de verdad como en producción hace falta el reverse proxy de NGINX — por
-eso el flujo real de este TP es dockerizar `web/` con NGINX sirviendo `dist/` (ver Dockerfile a
-crear) y usando `nginx/nginx.conf`, que ya viene armado con los 5 proxys.
+eso el flujo real de este TP es dockerizar `web/` con NGINX sirviendo `dist/` (ver la sección
+[Docker](#docker) más abajo) y usando `nginx/nginx.conf`, con los 5 proxys.
 
 ## Docker
 
 > Para entender cada archivo y concepto desde cero (NGINX, TLS, multistage), ver [`GUIA.md`](./GUIA.md).
 
 `web` es la **única entrada pública** del stack: sirve el front y reenvía `/api/<servicio>` a cada
-API por la red interna de Compose. Termina TLS y escucha **solo HTTPS en el puerto 8443**. No hay
+API por la red `frontend` de Compose. Termina TLS y escucha **solo HTTPS en el puerto 8443**. No hay
 puerto 80 en ningún lado.
 
 | Archivo | Qué hace |
@@ -72,7 +72,7 @@ Decisiones:
 
 ### Build y prueba local
 
-Desde la raíz del repo (`tp1/`):
+Desde la raíz del repo:
 
 ```sh
 docker build -t ${DOCKERHUB_USER}/fintech-nova-web:1.2.0 ./aplicaciones-contenedores/web

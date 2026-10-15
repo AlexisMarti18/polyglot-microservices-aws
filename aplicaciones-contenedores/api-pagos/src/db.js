@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 
 // Esta API se conecta a "db_pagos", UNA de las 5 bases que viven en la MISMA instancia
-// compartida de MariaDB (ver tp-2026/db).
+// compartida de MariaDB (ver aplicaciones-contenedores/db).
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 3306,

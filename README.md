@@ -2,6 +2,31 @@
 
 Plataforma financiera distribuida con arquitectura de microservicios contenerizada, securizada y desplegada en la nube (AWS EC2).
 
+## Contexto del proyecto
+
+Este repositorio es una **copia personal de un trabajo práctico grupal** de la materia
+*Desarrollo y Operaciones (DevOps)* de la facultad. Lo publico con fines **prácticos y de
+aprendizaje**: practicar y mostrar conocimiento de Docker, Docker Compose, AWS EC2 y seguridad
+básica de contenedores. No es un producto real: los datos de ejemplo (clientes, pagos, tarjetas) son
+ficticios.
+
+- **Trabajo en equipo.** Se hizo en grupo, por eso la documentación está escrita en plural
+  ("nuestro", "el grupo") y habla del **enunciado**, que es la consigna de la materia. Las capturas
+  de [Evidencia de funcionamiento](#evidencia-de-funcionamiento) son de la sesión de despliegue del
+  equipo, hecha desde la PC de uno de los integrantes: por eso en ellas aparece su usuario y su
+  cuenta de Docker Hub.
+- **Código de partida.** Las 5 APIs vinieron escritas por la cátedra y funcionaban sin Docker. Sobre
+  ellas solo hay correcciones de seguridad ([ERRORES.md](./ERRORES.md), [SEGURIDAD.md](./SEGURIDAD.md)).
+  En el frontend (`web`) se agregaron, entre otras cosas, la edición de registros y el manejo de
+  errores.
+- **Qué se agregó para el trabajo práctico.** Un `Dockerfile` y un `.dockerignore` por componente
+  (multistage, usuario no-root, `HEALTHCHECK`), el `docker-compose.yml` con dos redes, límites de
+  recursos y sin puertos publicados salvo el 8443, el certificado TLS generado en runtime,
+  `deploy.sh` para desplegar de punta a punta, los escaneos con Trivy y la documentación.
+- **Entorno de pruebas.** El despliegue se hizo en el **AWS Academy Learner Lab**, una cuenta de
+  laboratorio **temporal** que ofrece la facultad. Los identificadores, la IP y las credenciales que
+  figuran en la documentación y en las capturas son de esa sesión y ya no existen.
+
 ## Introducción
 
 FinTech Nova es una plataforma de microservicios **políglota**: cinco APIs REST, cada una en un
@@ -23,7 +48,9 @@ correcciones de seguridad, que están documentadas en [ERRORES.md](./ERRORES.md)
 
 > Verificado contra el despliegue real del 2026-10-07 en la EC2 `i-028ea3351d16f69fb`
 > (`54.152.76.222`, `us-east-1c`): 7 contenedores `healthy`, solo el 8443 publicado y el Security
-> Group con 22 desde la IP del equipo y 8443 público. Ver [Evidencia de funcionamiento](#evidencia-de-funcionamiento).
+> Group con 22 desde la IP del equipo y 8443 público. Esa sesión corrió `web:1.1.0`; la `1.2.0`
+> (edición de registros) es posterior y no figura en las capturas. Ver
+> [Evidencia de funcionamiento](#evidencia-de-funcionamiento).
 
 ```mermaid
 flowchart TB
@@ -89,15 +116,15 @@ Internet ──HTTPS :8443──► [Security Group: 22 desde IP del equipo, 844
                          open.er-api.com                  ipapi.co
 ```
 
-| Servicio | Imagen base (runtime) | Multistage | Usuario | Límites (CPU / memoria) | Puerto publicado |
-|---|---|---|---|---|---|
-| `web` | `nginx:1.30-alpine` (build con `node:22-alpine`) | Sí | `nginx` (101) | 0.25 / 64M | **8443** (único) |
-| `api-clientes` | `python:3.12-slim` | Sí (venv) | `appuser` | 0.25 / 128M | — |
-| `api-pagos` | `node:22-alpine` | No | `node` | 0.25 / 128M | — |
-| `api-facturas` | `eclipse-temurin:21-jre-alpine` (build con Maven + JDK 21) | Sí | `appuser` | 0.50 / 512M | — |
-| `api-transacciones` | `alpine:3.24.2` (build con `golang:1.27-alpine`) | Sí | `app` | 0.25 / 128M | — |
-| `api-tarjetas` | `dotnet/aspnet:8.0-alpine` (build con el SDK) | Sí | `appuser` | 0.25 / 256M | — |
-| `db` | `mariadb:11.8.9-ubi9` | No | el de la imagen oficial | 0.50 / 512M | — |
+| Servicio | Lenguaje / framework | Imagen base (runtime) | Multistage | Usuario | Límites (CPU / memoria) | Puerto publicado |
+|---|---|---|---|---|---|---|
+| `web` | JavaScript (Vite) servido por NGINX | `nginx:1.30-alpine` (build con `node:22-alpine`) | Sí | `nginx` (101) | 0.25 / 64M | **8443** (único) |
+| `api-clientes` | Python / Flask + Gunicorn | `python:3.12-slim` | Sí (venv) | `appuser` | 0.25 / 128M | — |
+| `api-pagos` | Node.js / Express | `node:22-alpine` | No | `node` | 0.25 / 128M | — |
+| `api-facturas` | Java 21 / Spring Boot 3.3 | `eclipse-temurin:21-jre-alpine` (build con Maven + JDK 21) | Sí | `appuser` | 0.50 / 512M | — |
+| `api-transacciones` | Go / `net/http` | `alpine:3.24.2` (build con `golang:1.27-alpine`) | Sí | `app` | 0.25 / 128M | — |
+| `api-tarjetas` | C# / .NET 8 (Minimal API) | `dotnet/aspnet:8.0-alpine` (build con el SDK) | Sí | `appuser` | 0.25 / 256M | — |
+| `db` | MariaDB 11.8 | `mariadb:11.8.9-ubi9` | No | el de la imagen oficial | 0.50 / 512M | — |
 
 En total, los límites suman unos 1,7 GiB, dentro de los 4 GiB de la `t3.medium`. Así queda margen
 para el sistema operativo, Docker y los picos de arranque de Java.
@@ -150,6 +177,10 @@ para el sistema operativo, Docker y los picos de arranque de Java.
 ## Cómo levantarlo
 
 ```sh
+# 0. Cuenta de Docker Hub donde están publicadas las imágenes. Sin esto, Compose usa
+#    "tu-usuario" y el pull falla. Para publicar las tuyas, ver "Desplegar en EC2" más abajo.
+export DOCKERHUB_USER=<tu-usuario-de-docker-hub>
+
 # 1. Crear cada .env a partir de su plantilla y completar usuario y contraseña de la base
 for s in db api-clientes api-pagos api-facturas api-transacciones api-tarjetas; do
   cp aplicaciones-contenedores/$s/env.example aplicaciones-contenedores/$s/.env
@@ -247,6 +278,10 @@ Todas las capturas son de **una misma sesión** del Learner Lab, el 2026-10-07, 
 `i-028ea3351d16f69fb` con IP pública `54.152.76.222`. Esa IP ya no está activa: cada sesión del
 sandbox entrega una nueva. Las imágenes están en [`docs/capturas/`](./docs/capturas/).
 
+Las capturas son del equipo (ver [Contexto del proyecto](#contexto-del-proyecto)) y de una versión
+anterior del frontend: la portada del apartado 4 todavía no tiene el botón "Editar" y muestra otro
+encabezado que el actual.
+
 ### 1. Despliegue con `deploy.sh`
 
 El script instala Docker y Compose en la instancia nueva, copia el compose y los `.env` por SSH,
@@ -292,6 +327,11 @@ La instancia EC2 (`t3.medium`, Ubuntu Server 26.04 LTS) fue provisionada en una 
 Verificación de la instancia y sus atributos mediante la AWS CLI en CloudShell:
 
 ![CloudShell: aws ec2 describe-instances con AMI, zona, DNS, ID, IP, Security Group, subred, tipo y VPC](./docs/capturas/10-aws-cli.png)
+
+> Se ocultó un dato personal en esta captura y el procesamiento alteró algunos caracteres: la tabla
+> de CloudShell no se lee fiel (por ejemplo, la IP aparece como `24.152.76.222`). Los valores
+> correctos están en [AWS_EC2.md](./AWS_EC2.md#cómo-se-creó-la-infraestructura) y coinciden con el
+> panel superior de la captura y con los apartados 1 a 3.
 
 ## Posibles mejoras
 

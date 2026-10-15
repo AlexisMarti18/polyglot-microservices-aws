@@ -45,6 +45,7 @@ curl http://localhost:8080/transacciones
 ```
 
 ## Docker
-Este directorio **no incluye Dockerfile** — es parte de la consigna del TP escribirlo (ver el
-`README.md` en la raíz de `tp-2026/`). Pista: Go compila a un binario estático, así que el
-multistage acá te puede dejar una imagen final buscando solo `FROM scratch` o `alpine`.
+El `Dockerfile` es multistage: `golang:1.27-alpine` compila un binario estático (`CGO_ENABLED=0`) y
+la imagen final es `alpine:3.24.2` con el binario, `ca-certificates` (para el TLS de ipapi.co) y el
+usuario no-root `app`. Pesa unos 25 MB. Ver el [README de la raíz](../../README.md) y
+[SEGURIDAD.md](../../SEGURIDAD.md).

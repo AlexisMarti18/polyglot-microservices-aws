@@ -262,7 +262,7 @@ C = CRITICAL, H = HIGH, M = MEDIUM, L = LOW.
   CRITICAL y 21 HIGH en la librería estándar.
 - **Causa:** el enunciado fija la imagen `mariadb:11.8.9-ubi9`, que se publicó antes de esos
   parches. El `Dockerfile` de `db` no actualiza paquetes.
-- **Riesgo:** MariaDB no publica puertos: solo la alcanzan las 5 APIs por la red `interna`. La
+- **Riesgo:** MariaDB no publica puertos: solo la alcanzan las 5 APIs por la red `backend`. La
   mayoría de los paquetes afectados son herramientas que el servidor no usa (`rsync`, `curl`,
   `perl-DBI`).
 - **Arreglo propuesto:** agregar `RUN microdnf update -y && microdnf clean all` al `Dockerfile` de
@@ -450,7 +450,7 @@ benchmark.
 | 5 | Contenedor sin límite de procesos. | A02 · CIS Docker 5.28 | **Corregido:** `pids: 100`. |
 | 6 | El frontend ignoraba los errores de las APIs: un alta rechazada parecía exitosa. | A10 | **Corregido:** `main.js` revisa `res.ok` y muestra un aviso; el formulario no se limpia si falla. |
 | 7 | El cliente podía falsificar `X-Forwarded-For` (el backend recibía `1.2.3.4, 172.18.0.1`). | A02 | **Corregido:** el backend recibe solo la IP real. La cabecera `Host` se sigue reenviando tal cual: sin dominio propio no hay contra qué validarla. |
-| 8 | Imágenes base por tag flotante. | A03, A08 · CIS Docker 4.2 | **Corregido:** fijadas por digest. La imagen propia se publica como `${DOCKERHUB_USER}/fintech-nova-web:1.0.0`. |
+| 8 | Imágenes base por tag flotante. | A03, A08 · CIS Docker 4.2 | **Corregido:** fijadas por digest. La imagen propia se publica con tag de versión fijo (`${DOCKERHUB_USER}/fintech-nova-web:1.0.0` en esa revisión; hoy va por `1.2.0`). |
 | 9 | `default.conf` en `755` y clave TLS en `600`. | A02 · CIS NGINX 2.3.2, 4.1.3 | **Corregido:** `644` y `400`. |
 | 10 | Sin regla para archivos ocultos, `OPTIONS` llegaba a las APIs, páginas de error con "nginx", y `curl`/`nc`/`apk` en la imagen. | A02 · CIS NGINX 2.5.2, 2.5.3, 5.1.2 · CIS Docker 4.3 | **Corregido** (ver la tabla de buenas prácticas de `web`). |
 
